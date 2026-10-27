@@ -12,8 +12,8 @@ Scope: national GB wind only. Actuals from Elexon `FUELHH` (`fuelType=WIND`), fo
 | **Live app** | _add Vercel URL_ (login required; credentials are shared separately) |
 | **Video** | _add unlisted YouTube URL_ |
 
-![Decision view](docs/img/decision.png)
-![Accuracy view](docs/img/accuracy.png)
+![Decision view](assets/decision.png)
+![Accuracy view](assets/accuracy.png)
 
 ## What January shows
 
@@ -68,8 +68,7 @@ frontend/src/
 data/              committed snapshot: forecasts.csv, actuals.csv, manifest.json
 api/index.py       Vercel serverless entrypoint     vercel.json  routing + bundle config
 openapi.json      API contract (CI fails if stale)
-docs/              problem statement, decisions log, phase plans
-video/             Remotion project for the two explainer videos (not part of the app)
+assets/            README screenshots
 ```
 
 ## How it works
@@ -84,7 +83,16 @@ Elexon API ─ingest─▶ data/*.csv ─▶ CsvRepository ─▶ AnalyticsServi
 - **Risk band / buffer:** quantiles of past signed errors (central 80% → P10..P90). **No look-ahead:** at D-1 09:00 day D-1 is unfinished, so only days ≤ D-2 are used. Hidden until 3 usable days exist, with the reason shown in the UI. Buffer = P90 over-forecast, floored at 0.
 - **Horizon analysis** scores every published revision, not just the one used for the bid, to show whether waiting for a fresher forecast helps.
 
-All assumptions, with what to confirm with the product manager, are in [docs/decisions.md](docs/decisions.md).
+### Assumptions to confirm with the product owner
+
+| Topic | Assumption |
+|---|---|
+| Cutoff | D-1 09:00 Europe/London (`DECISION_CUTOFF_LOCAL`); the real auction gate may differ |
+| "January" | Decision date, so delivery days are 2 Jan – 1 Feb |
+| Grain / units | Hourly, MW (power, not energy); actual = mean of the two half-hours; partial hours dropped |
+| Missing data | Excluded from metrics, coverage reported |
+| Band | 80% central interval (P10–P90) of past errors, days ≤ D-2 only |
+| Bias | +1.7 GW at every horizon, likely a series-definition offset; unverified |
 
 ## Engineering practices
 
@@ -97,7 +105,7 @@ All assumptions, with what to confirm with the product manager, are in [docs/dec
 
 ## Access control
 
-The whole product sits behind a login. One shared credential comes from environment variables; a successful login sets a signed (HMAC-SHA256), `HttpOnly`, `SameSite=Lax` session cookie (`Secure` over HTTPS, 12 h). Stateless, so it works on serverless with no session store. Every data endpoint returns `401` without a valid session; only `/api/v1/health` is public. The app **refuses to start** if `AUTH_USERNAME`, `AUTH_PASSWORD` or a ≥32-char `SESSION_SECRET` is missing, so it cannot be deployed open by accident. Frontend: any `401` returns the user to the sign-in screen and deep links survive login. The JS bundle and sign-in page are public; data is not. Limits: single shared account, no rate limiting beyond a delay on failed logins ([D16–D18](docs/decisions.md)).
+The whole product sits behind a login. One shared credential comes from environment variables; a successful login sets a signed (HMAC-SHA256), `HttpOnly`, `SameSite=Lax` session cookie (`Secure` over HTTPS, 12 h). Stateless, so it works on serverless with no session store. Every data endpoint returns `401` without a valid session; only `/api/v1/health` is public. The app **refuses to start** if `AUTH_USERNAME`, `AUTH_PASSWORD` or a ≥32-char `SESSION_SECRET` is missing, so it cannot be deployed open by accident. Frontend: any `401` returns the user to the sign-in screen and deep links survive login. The JS bundle and sign-in page are public; data is not. Limits: single shared account, no rate limiting beyond a delay on failed logins.
 
 ## Deploy (Vercel)
 
@@ -125,4 +133,4 @@ SMOKE_USER=<user> SMOKE_PASSWORD=<password> scripts/smoke.sh https://<your-app>.
 
 ## AI usage disclosure
 
-This project was built with **Claude Code** (Anthropic) as a pair-programming assistant: planning, scaffolding, writing code and tests, and drafting docs. I reviewed the design decisions and checked outputs against the live Elexon data (row counts, cutoff behaviour, headline metrics) and against the test suite.
+AI coding assistance (an LLM pair-programming tool) was used for planning, scaffolding, writing code and tests, and drafting docs. I reviewed the design decisions and checked outputs against the live Elexon data (row counts, cutoff behaviour, headline metrics) and against the test suite.

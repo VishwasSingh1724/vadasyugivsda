@@ -1,0 +1,1515 @@
+{
+  "components": {
+    "schemas": {
+      "AccuracyGroups": {
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/GroupMetrics"
+            },
+            "title": "Groups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "groups"
+        ],
+        "title": "AccuracyGroups",
+        "type": "object"
+      },
+      "AccuracySummary": {
+        "properties": {
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "% of decision-time forecast hours with an actual",
+            "title": "Coverage Pct"
+          },
+          "date_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date From"
+          },
+          "date_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date To"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/Metrics"
+          }
+        },
+        "required": [
+          "date_from",
+          "date_to",
+          "coverage_pct",
+          "metrics"
+        ],
+        "title": "AccuracySummary",
+        "type": "object"
+      },
+      "DaySummary": {
+        "properties": {
+          "energy_mwh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sum of hourly MW x 1h",
+            "title": "Energy Mwh"
+          },
+          "hours_missing": {
+            "description": "Hours with no forecast published before the cutoff",
+            "title": "Hours Missing",
+            "type": "integer"
+          },
+          "mean_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Mw"
+          },
+          "peak_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Mw"
+          },
+          "trough_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trough Mw"
+          }
+        },
+        "required": [
+          "mean_mw",
+          "peak_mw",
+          "trough_mw",
+          "energy_mwh",
+          "hours_missing"
+        ],
+        "title": "DaySummary",
+        "type": "object"
+      },
+      "DeliveryDay": {
+        "properties": {
+          "cutoff_time": {
+            "format": "date-time",
+            "title": "Cutoff Time",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "hours_with_actual": {
+            "title": "Hours With Actual",
+            "type": "integer"
+          },
+          "hours_with_forecast": {
+            "title": "Hours With Forecast",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "cutoff_time",
+          "hours_with_forecast",
+          "hours_with_actual"
+        ],
+        "title": "DeliveryDay",
+        "type": "object"
+      },
+      "DeliveryDays": {
+        "properties": {
+          "cutoff_local": {
+            "title": "Cutoff Local",
+            "type": "string"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DeliveryDay"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "timezone",
+          "cutoff_local",
+          "days"
+        ],
+        "title": "DeliveryDays",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorHistogram": {
+        "properties": {
+          "bin_width_mw": {
+            "title": "Bin Width Mw",
+            "type": "integer"
+          },
+          "bins": {
+            "items": {
+              "$ref": "#/components/schemas/HistogramBin"
+            },
+            "title": "Bins",
+            "type": "array"
+          }
+        },
+        "required": [
+          "bin_width_mw",
+          "bins"
+        ],
+        "title": "ErrorHistogram",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "ForecastDay": {
+        "properties": {
+          "cutoff_time": {
+            "format": "date-time",
+            "title": "Cutoff Time",
+            "type": "string"
+          },
+          "delivery_date": {
+            "format": "date",
+            "title": "Delivery Date",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "risk": {
+            "$ref": "#/components/schemas/Risk"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DaySummary"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "delivery_date",
+          "cutoff_time",
+          "timezone",
+          "points",
+          "summary",
+          "risk"
+        ],
+        "title": "ForecastDay",
+        "type": "object"
+      },
+      "ForecastPoint": {
+        "properties": {
+          "actual_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Mw"
+          },
+          "band_lower_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band Lower Mw"
+          },
+          "band_upper_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band Upper Mw"
+          },
+          "forecast_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Mw"
+          },
+          "horizon_h": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Horizon H"
+          },
+          "publish_time": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publish Time"
+          },
+          "start_time": {
+            "format": "date-time",
+            "title": "Start Time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_time",
+          "forecast_mw",
+          "actual_mw",
+          "publish_time",
+          "horizon_h",
+          "band_lower_mw",
+          "band_upper_mw"
+        ],
+        "title": "ForecastPoint",
+        "type": "object"
+      },
+      "GroupMetrics": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/Metrics"
+          }
+        },
+        "required": [
+          "key",
+          "metrics"
+        ],
+        "title": "GroupMetrics",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "Health",
+        "type": "object"
+      },
+      "HistogramBin": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "end_mw": {
+            "title": "End Mw",
+            "type": "integer"
+          },
+          "start_mw": {
+            "title": "Start Mw",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_mw",
+          "end_mw",
+          "count"
+        ],
+        "title": "HistogramBin",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "properties": {
+          "password": {
+            "format": "password",
+            "maxLength": 256,
+            "title": "Password",
+            "type": "string",
+            "writeOnly": true
+          },
+          "username": {
+            "maxLength": 128,
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "Me": {
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ],
+        "title": "Me",
+        "type": "object"
+      },
+      "Metrics": {
+        "properties": {
+          "bias_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Mean of forecast - actual; positive = over-forecast",
+            "title": "Bias Mw"
+          },
+          "mae_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mae Mw"
+          },
+          "n": {
+            "description": "Number of scored hours",
+            "title": "N",
+            "type": "integer"
+          },
+          "nmae_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MAE as % of mean actual generation",
+            "title": "Nmae Pct"
+          },
+          "p50_abs_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50 Abs Mw"
+          },
+          "p90_abs_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90 Abs Mw"
+          },
+          "p99_abs_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P99 Abs Mw"
+          },
+          "rmse_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rmse Mw"
+          }
+        },
+        "required": [
+          "n",
+          "mae_mw",
+          "rmse_mw",
+          "bias_mw",
+          "nmae_pct",
+          "p50_abs_mw",
+          "p90_abs_mw",
+          "p99_abs_mw"
+        ],
+        "title": "Metrics",
+        "type": "object"
+      },
+      "Ready": {
+        "properties": {
+          "data_version": {
+            "title": "Data Version",
+            "type": "string"
+          },
+          "rows": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Rows",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data_version",
+          "rows"
+        ],
+        "title": "Ready",
+        "type": "object"
+      },
+      "Risk": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "history_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History Days"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "suggested_buffer_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Extra MW to hold so over-forecast shortfall is covered",
+            "title": "Suggested Buffer Mw"
+          }
+        },
+        "required": [
+          "available"
+        ],
+        "title": "Risk",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Vintage": {
+        "properties": {
+          "available_at_cutoff": {
+            "title": "Available At Cutoff",
+            "type": "boolean"
+          },
+          "forecast_mw": {
+            "title": "Forecast Mw",
+            "type": "number"
+          },
+          "horizon_h": {
+            "title": "Horizon H",
+            "type": "number"
+          },
+          "publish_time": {
+            "format": "date-time",
+            "title": "Publish Time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "publish_time",
+          "forecast_mw",
+          "horizon_h",
+          "available_at_cutoff"
+        ],
+        "title": "Vintage",
+        "type": "object"
+      },
+      "Vintages": {
+        "properties": {
+          "actual_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Mw"
+          },
+          "cutoff_time": {
+            "format": "date-time",
+            "title": "Cutoff Time",
+            "type": "string"
+          },
+          "target": {
+            "format": "date-time",
+            "title": "Target",
+            "type": "string"
+          },
+          "vintages": {
+            "items": {
+              "$ref": "#/components/schemas/Vintage"
+            },
+            "title": "Vintages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "target",
+          "cutoff_time",
+          "actual_mw",
+          "vintages"
+        ],
+        "title": "Vintages",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Day-ahead wind forecast decision support for GB (Elexon FUELHH / WINDFOR).",
+    "title": "WindWatch API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/accuracy/by-horizon": {
+      "get": {
+        "description": "Error of every published revision, bucketed by how far ahead it was made.",
+        "operationId": "accuracy_by_horizon_api_v1_accuracy_by_horizon_get",
+        "parameters": [
+          {
+            "description": "First delivery date (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First delivery date (inclusive)",
+              "title": "From"
+            }
+          },
+          {
+            "description": "Last delivery date (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last delivery date (inclusive)",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccuracyGroups"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Accuracy By Horizon",
+        "tags": [
+          "accuracy"
+        ]
+      }
+    },
+    "/api/v1/accuracy/by-hour": {
+      "get": {
+        "operationId": "accuracy_by_hour_api_v1_accuracy_by_hour_get",
+        "parameters": [
+          {
+            "description": "First delivery date (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First delivery date (inclusive)",
+              "title": "From"
+            }
+          },
+          {
+            "description": "Last delivery date (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last delivery date (inclusive)",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccuracyGroups"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Accuracy By Hour",
+        "tags": [
+          "accuracy"
+        ]
+      }
+    },
+    "/api/v1/accuracy/by-wind-level": {
+      "get": {
+        "operationId": "accuracy_by_wind_api_v1_accuracy_by_wind_level_get",
+        "parameters": [
+          {
+            "description": "First delivery date (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First delivery date (inclusive)",
+              "title": "From"
+            }
+          },
+          {
+            "description": "Last delivery date (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last delivery date (inclusive)",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccuracyGroups"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Accuracy By Wind",
+        "tags": [
+          "accuracy"
+        ]
+      }
+    },
+    "/api/v1/accuracy/daily": {
+      "get": {
+        "operationId": "accuracy_daily_api_v1_accuracy_daily_get",
+        "parameters": [
+          {
+            "description": "First delivery date (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First delivery date (inclusive)",
+              "title": "From"
+            }
+          },
+          {
+            "description": "Last delivery date (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last delivery date (inclusive)",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccuracyGroups"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Accuracy Daily",
+        "tags": [
+          "accuracy"
+        ]
+      }
+    },
+    "/api/v1/accuracy/errors": {
+      "get": {
+        "description": "Distribution of signed decision-time errors (forecast - actual).",
+        "operationId": "accuracy_errors_api_v1_accuracy_errors_get",
+        "parameters": [
+          {
+            "description": "First delivery date (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First delivery date (inclusive)",
+              "title": "From"
+            }
+          },
+          {
+            "description": "Last delivery date (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last delivery date (inclusive)",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorHistogram"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Accuracy Errors",
+        "tags": [
+          "accuracy"
+        ]
+      }
+    },
+    "/api/v1/accuracy/summary": {
+      "get": {
+        "description": "Headline metrics of the decision-time forecast over a range of delivery days.",
+        "operationId": "accuracy_summary_api_v1_accuracy_summary_get",
+        "parameters": [
+          {
+            "description": "First delivery date (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First delivery date (inclusive)",
+              "title": "From"
+            }
+          },
+          {
+            "description": "Last delivery date (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last delivery date (inclusive)",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccuracySummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Accuracy Summary",
+        "tags": [
+          "accuracy"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/delivery-days": {
+      "get": {
+        "description": "Delivery days with data, for the date picker.",
+        "operationId": "delivery_days_api_v1_delivery_days_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryDays"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delivery Days",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/api/v1/forecast": {
+      "get": {
+        "description": "Latest forecast available at the D-1 cutoff, with risk band and suggested buffer.",
+        "operationId": "forecast_api_v1_forecast_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "delivery_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Delivery Date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastDay"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Forecast",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/api/v1/forecast/vintages": {
+      "get": {
+        "description": "Every revision of the forecast for one target hour, and which predate the cutoff.",
+        "operationId": "vintages_api_v1_forecast_vintages_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "target",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Target",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vintages"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Vintages",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "ops"
+        ]
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "operationId": "ready_api_v1_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ready"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "ops"
+        ]
+      }
+    }
+  }
+}

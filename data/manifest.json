@@ -1,0 +1,17 @@
+{
+  "version": "c371bc8b377986fe",
+  "rows": {
+    "forecasts": 18688,
+    "actuals": 744
+  },
+  "forecast_publish_range": [
+    "2025-12-31T02:30:00+00:00",
+    "2026-01-31T22:30:00+00:00"
+  ],
+  "target_range": [
+    "2026-01-02T00:00:00+00:00",
+    "2026-02-01T23:00:00+00:00"
+  ],
+  "fetched_at": "2026-10-27T07:31:56+00:00",
+  "source": "https://data.elexon.co.uk/bmrs/api/v1/datasets"
+}
