@@ -9,7 +9,7 @@ Scope: national GB wind only. Actuals from Elexon `FUELHH` (`fuelType=WIND`), fo
 
 | | |
 |---|---|
-| **Live app** | _add Vercel URL_ (login required; credentials are shared separately) |
+| **Live app** | _add Vercel URL_ (open, no login) |
 | **Video** | _add unlisted YouTube URL_ |
 
 ![Decision view](assets/decision.png)
@@ -105,24 +105,19 @@ Elexon API ─ingest─▶ data/*.csv ─▶ CsvRepository ─▶ AnalyticsServi
 
 ## Access control
 
-The whole product sits behind a login. One shared credential comes from environment variables; a successful login sets a signed (HMAC-SHA256), `HttpOnly`, `SameSite=Lax` session cookie (`Secure` over HTTPS, 12 h). Stateless, so it works on serverless with no session store. Every data endpoint returns `401` without a valid session; only `/api/v1/health` is public. The app **refuses to start** if `AUTH_USERNAME`, `AUTH_PASSWORD` or a ≥32-char `SESSION_SECRET` is missing, so it cannot be deployed open by accident. Frontend: any `401` returns the user to the sign-in screen and deep links survive login. The JS bundle and sign-in page are public; data is not. Limits: single shared account, no rate limiting beyond a delay on failed logins.
+Login is **optional**. The deployed app is open (`AUTH_ENABLED=false`). With `AUTH_ENABLED=true` the whole product sits behind a login: one shared credential from `AUTH_USERNAME` / `AUTH_PASSWORD`, a signed (HMAC-SHA256) `HttpOnly`, `SameSite=Lax` session cookie (`Secure` over HTTPS, 12 h), stateless so it works on serverless. Every data endpoint then returns `401` without a session; only `/api/v1/health` is public. The app refuses to start with auth enabled but credentials or a ≥32-char `SESSION_SECRET` missing. Docker Compose and `make dev` run with login on (`demo` / `demo-password`). Limits: single shared account, no rate limiting beyond a delay on failed logins.
 
 ## Deploy (Vercel)
 
-One project, repo root as the root directory: static frontend + the FastAPI app as a Python function (`api/index.py`), data bundled read-only. Measured locally: runtime dependencies 80 MB (limit 250 MB), cold import ≈ 0.4 s with warm bytecode. Then:
-```bash
-```
-Set these in Vercel → Settings → Environment Variables (Production), then redeploy:
+One project, repo root as the root directory: static frontend + the FastAPI app as a Python function (`api/index.py`), data bundled read-only. Measured locally: runtime dependencies 80 MB (limit 250 MB), cold import ≈ 0.4 s with warm bytecode. Set one environment variable in Vercel → Settings → Environment Variables, then deploy:
 
 | Variable | Value |
 |---|---|
-| `AUTH_USERNAME` | login name for the client |
-| `AUTH_PASSWORD` | a strong password |
-| `SESSION_SECRET` | `openssl rand -hex 32` |
+| `AUTH_ENABLED` | `false` for an open app. To require login instead, set `true` plus `AUTH_USERNAME`, `AUTH_PASSWORD` and `SESSION_SECRET` (`openssl rand -hex 32`) |
 
-Verify (also fails if the data were ever left unprotected):
+Verify (adapts to open or login mode; with login on, pass `SMOKE_USER` and `SMOKE_PASSWORD`):
 ```bash
-SMOKE_USER=<user> SMOKE_PASSWORD=<password> scripts/smoke.sh https://<your-app>.vercel.app
+scripts/smoke.sh https://<your-app>.vercel.app
 ```
 
 ## Known limits / next steps

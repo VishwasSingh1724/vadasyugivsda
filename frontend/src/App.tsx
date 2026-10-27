@@ -34,10 +34,15 @@ export default function App() {
         </nav>
         <div className="user">
           <button onClick={() => window.print()}>Print / PDF</button>
-          <span className="muted">{me.data.username}</span>
-          <button onClick={() => logout.mutate()} disabled={logout.isPending}>
-            Sign out
-          </button>
+          {/* The API reports "anonymous" when login is switched off: nothing to show or sign out of. */}
+          {me.data.username !== 'anonymous' && (
+            <>
+              <span className="muted">{me.data.username}</span>
+              <button onClick={() => logout.mutate()} disabled={logout.isPending}>
+                Sign out
+              </button>
+            </>
+          )}
         </div>
       </header>
       <main id="main">
